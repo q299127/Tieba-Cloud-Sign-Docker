@@ -1,5 +1,5 @@
 #!/bin/bash
 #启动cron计划
-echo 'start cron====>'
+echo "===>start cron====>"
 cron start
-echo 'done ====>'
+echo "done ====>"
