@@ -3,7 +3,7 @@
 FROM maxexcloo/nginx-php
 MAINTAINER smounives "smounives@outlook.com"
 
-RUN apt-get update && apt-get install -y --force-yes git
+RUN apt-get update && apt-get install -y --force-yes git cron procps
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 RUN rm -rf /data/http
