@@ -14,4 +14,4 @@ COPY runcron.sh /runcron.sh
 RUN chmod +x /runcron.sh
 
 EXPOSE 80
-CMD ("/runcron.sh")
+#CMD ("/runcron.sh")
