@@ -1,7 +1,7 @@
 # VERSION  0.0.1
 
 FROM maxexcloo/nginx-php
-MAINTAINER smounives "smounives@outlook.com"
+MAINTAINER sanzuwu "sanzuwu@gmail.com"
 
 RUN apt-get update && apt-get install -y --force-yes git cron procps
 RUN apt-get clean
