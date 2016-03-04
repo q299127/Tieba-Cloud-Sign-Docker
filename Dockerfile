@@ -5,6 +5,8 @@ MAINTAINER sanzuwu "sanzuwu@gmail.com"
 
 RUN apt-get update && apt-get install -y --force-yes git cron procps
 RUN apt-get clean
+#设置时区为北京时区
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN rm -rf /var/lib/apt/lists/*
 RUN rm -rf /data/http
 RUN git clone https://github.com/q299127/Tieba-Cloud-Sign /data/http/
