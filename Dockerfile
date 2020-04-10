@@ -1,20 +1,34 @@
-# VERSION  0.0.1
+# VERSION  0.0.2
 
-FROM maxexcloo/nginx-php
-MAINTAINER sanzuwu "sanzuwu@gmail.com"
+FROM webhippie/php-caddy
 
-RUN apt-get update && apt-get install -y --force-yes git cron procps
-RUN apt-get clean
-#设置时区为北京时区
-RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-RUN rm -rf /var/lib/apt/lists/*
-RUN rm -rf /data/http
-RUN git clone https://github.com/MoeNetwork/Tieba-Cloud-Sign /data/http/
-RUN git clone https://github.com/kalcaddle/KODExplorer /data/http/explorer/
-#RUN echo '*/1 * * * * root php /data/http/do.php' >> /etc/crontab
-#将运行脚本复制到/config文件夹下，并改名为inti03，这里基础镜像加入了运行脚本loop，循环执行/config下init××脚本
-COPY runcron.sh /config/init03 
-RUN chmod +x /config/init03
-#RUN sh /runcron.sh
-EXPOSE 80
-#CMD ("/runcron.sh")
+MAINTAINER sanzuwu  <sanzuwu@gmail.com>
+
+EXPOSE 8080
+
+WORKDIR /srv/www
+
+ENV DB_HOST='127.0.0.1'\
+    DB_USER='root'\
+    DB_PASSWD=''\
+    DB_NAME='tiebacloud' \
+    CONIFG_PATH='/srv/www/config.php' \
+    CSRF='false'
+
+
+
+RUN git clone https://github.com/MoeNetwork/Tieba-Cloud-Sign.git /srv/www && \
+    rm -r /var/cache/apk && \
+    rm -r /usr/share/man && \
+    ls
+
+RUN echo "* * * * * /usr/bin/php7 /srv/www/do.php" >> /etc/crontabs/root
+
+ENTRYPOINT sed -i ''"$(cat ${CONIFG_PATH} -n | grep "DB_HOST" | awk '{print $1}')"'c '"$(echo "define('DB_HOST','${DB_HOST}');")"'' ${CONIFG_PATH} && \
+              sed -i ''"$(cat ${CONIFG_PATH} -n | grep "DB_USER" | awk '{print $1}')"'c '"$(echo "define('DB_USER','${DB_USER}');")"'' ${CONIFG_PATH} && \
+               sed -i ''"$(cat ${CONIFG_PATH} -n | grep "DB_PASSWD" | awk '{print $1}')"'c '"$(echo "define('DB_PASSWD','${DB_PASSWD}');")"'' ${CONIFG_PATH} && \
+              sed -i ''"$(cat ${CONIFG_PATH} -n | grep "DB_NAME" | awk '{print $1}')"'c '"$(echo "define('DB_NAME','${DB_NAME}');")"'' ${CONIFG_PATH} && \
+              sed -i ''"$(cat ${CONIFG_PATH} -n | grep "ANTI_CSRF" | awk '{print $1}')"'c '"$(echo "define('ANTI_CSRF',"${CSRF}");")"'' ${CONIFG_PATH} && \
+              cat ${CONIFG_PATH} && \
+              crond && \
+              /bin/s6-svscan /etc/s6
